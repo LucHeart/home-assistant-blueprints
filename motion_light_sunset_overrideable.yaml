@@ -3,7 +3,7 @@ blueprint:
   name: Motion-activated Light with sun condition, and override.
   description: Turn on a light when motion is detected and sun is set, and override.
   domain: automation
-  source_url: https://github.com/zLucPlayZ/home-assistant-blueprints/blob/master/motion_light_sunset.yaml
+  source_url: https://github.com/zLucPlayZ/home-assistant-blueprints/blob/master/motion_light_sunset_overrideable.yaml
   input:
     motion_entity:
       name: Motion Sensor
@@ -59,6 +59,14 @@ variables:
   ref_light_target: !input ref_light_target
 
 condition:
+  - condition: and
+    conditions:
+    - condition: sun
+      after: sunset
+      after_offset: !input sunset_offset
+    - condition: sun
+      before: sunrise
+      before_offset: !input sunrise_offset
   - condition: or
     conditions:
     - condition: state
