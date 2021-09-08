@@ -59,7 +59,7 @@ variables:
   ref_light_target: !input ref_light_target
 
 condition:
-  - condition: and
+  - condition: or
     conditions:
     - condition: sun
       after: sunset
