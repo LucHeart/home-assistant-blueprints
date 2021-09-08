@@ -1,7 +1,7 @@
 # Original source from https://github.com/home-assistant/core/blob/dev/homeassistant/components/automation/blueprints/motion_light.yaml
 blueprint:
-  name: Motion-activated Light with sun condition
-  description: Turn on a light when motion is detected and sun is set.
+  name: Motion-activated Light with sun condition, and override.
+  description: Turn on a light when motion is detected and sun is set, and override.
   domain: automation
   source_url: https://github.com/zLucPlayZ/home-assistant-blueprints/blob/master/motion_light_sunset.yaml
   input:
@@ -57,6 +57,13 @@ trigger:
   to: "on"
 
 condition:
+  - conditon: and
+    conditions:
+      - condition: template
+        value_template: "{{ light_target.context.user_id != none }}"
+      - condition: state
+        entity_id: !input light_target
+        state: "on"
   - condition: or
     conditions:
     - condition: sun
