@@ -11,11 +11,10 @@ blueprint:
         entity:
           domain: binary_sensor
           device_class: motion
-    light_target:
-      name: Light
+    ref_light_target:
+      name: Reference Light
       selector:
-        target:
-          entity:
+        entity:
             domain: light
     no_motion_wait:
       name: Wait time
@@ -56,27 +55,22 @@ trigger:
   from: "off"
   to: "on"
 
+variables:
+  ref_light_target: !input ref_light_target
+
 condition:
-  - conditon: and
-    conditions:
-      - condition: template
-        value_template: "{{ light_target.context.user_id != none }}"
-      - condition: state
-        entity_id: !input light_target
-        state: "on"
   - condition: or
     conditions:
-    - condition: sun
-      after: sunset
-      after_offset: !input sunset_offset
-    - condition: sun
-      before: sunrise
-      before_offset: !input sunrise_offset
+    - condition: state
+      entity_id: !input ref_light_target
+      state: "off"
+    - condition: template   
+      value_template: "{{ states[ref_light_target].context.user_id == none }}"
 
 action:
   - alias: "Turn on the light"
     service: light.turn_on
-    target: !input light_target
+    entity_id: !input ref_light_target
   - alias: "Wait until there is no motion from device"
     wait_for_trigger:
       platform: state
@@ -87,4 +81,4 @@ action:
     delay: !input no_motion_wait
   - alias: "Turn off the light"
     service: light.turn_off
-    target: !input light_target
+    entity_id: !input ref_light_target
